@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const bcrypt = require("bcrypt");
 const { toJWT, toData } = require("../authentication/jwt");
 const User = require("../models").user;
 
@@ -15,9 +16,12 @@ router.post("/login", async (req, res, next) => {
       res.status(400).send("User not found");
     } else {
       userPassword = user.password;
-      return res.send({
-        jwt: toJWT({ userId: 1 }),
-      });
+      const result = bcrypt.compareSync(password, userPassword);
+      if (result) {
+        res.send({ jwt: toJWT({ userId: 1 }) });
+      } else {
+        res.status(404).send({ message: "Password was incorrect." });
+      }
     }
   }
 });

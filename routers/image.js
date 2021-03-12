@@ -7,7 +7,7 @@ const Image = require("../models").image;
 router.get("/", async (req, res, next) => {
   const limit = Math.min(req.query.limit || 6, 50); // limit indicates how many results are on a page.
   //Math.min function compares which is min value and returns
-  const offset = req.query.offset || 0;
+  const offset = req.query.offset || 0; //how many results to skip for next page
 
   try {
     const result = await Image.findAndCountAll({ limit, offset });
