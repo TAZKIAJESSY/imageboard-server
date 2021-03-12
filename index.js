@@ -8,8 +8,10 @@ const userRouter = require("./routers/user");
 const imageRouter = require("./routers/image");
 const authRouter = require("./routers/auth");
 
+const authMiddleware = require("./authentication/middleware");
+
 app.use("/users", userRouter);
-app.use("/images", imageRouter);
+app.use("/images", authMiddleware, imageRouter);
 app.use("/auth", authRouter);
 
 const port = process.env.PORT || 4000;
