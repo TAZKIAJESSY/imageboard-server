@@ -1,10 +1,11 @@
 const { Router } = require("express");
 const router = new Router(); //crete a router class
+const { toData } = require("../authentication/jwt");
 
 const Image = require("../models").image;
 
 router.get("/", async (req, res, next) => {
-  const limit = Math.min(req.query.limit || 2, 50); // limit indicates how many results are on a page.
+  const limit = Math.min(req.query.limit || 6, 50); // limit indicates how many results are on a page.
   //Math.min function compares which is min value and returns
   const offset = req.query.offset || 0;
 
@@ -37,5 +38,28 @@ router.get("/:imageId", async (req, res, next) => {
   }
 });
 //http GET :4000/images/3
+
+router.get("/auth/messy", async (req, res, next) => {
+  const auth = req.headers.authorization?.split(" ");
+  // same as const auth = req.headers.authorization && req.headers.authorization.split(" ");
+  if (auth && auth[0] === "Bearer" && auth[1]) {
+    // console.log(auth[1]);
+    try {
+      const data = toData(auth[1]);
+      // console.log(data);
+      const allImages = await Image.findAll();
+      res.json(allImages);
+    } catch (e) {
+      console.log(e.message);
+      res.status(400).send("Invalid JWT token");
+    }
+  } else {
+    res.status(401).send({
+      message: "Please supply some valid credentials",
+    });
+  }
+});
+//http POST :4000/auth/login fullName=Monishhaque email=manish@gmail.com password=welcome
+//http :4000/images/auth/messy Authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYxNTU1MjgwNiwiZXhwIjoxNjE1NTYwMDA2fQ.lmIfOdAIz_IhQwTMI2aniE4fzS8aAD370bA8M-Wko4"
 
 module.exports = router;
