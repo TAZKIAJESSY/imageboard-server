@@ -20,6 +20,10 @@ router.post("/login", async (req, res, next) => {
       const result = bcrypt.compareSync(password, userPassword);
       if (result) {
         res.send({ jwt: toJWT({ userId: 1 }) });
+
+        //const data = { userId: user.id };
+        // const jwt = toJWT(data);
+        // return response.send({ jwt });
       } else {
         res.status(404).send({ message: "Password was incorrect." });
       }
